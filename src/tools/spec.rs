@@ -41,6 +41,24 @@ fn into_spec_params(mut json_schema: Value) -> Result<Value> {
 
 	// loop through all property entries
 	for (_name, prop_value) in properties_obj {
+		// -- Handle direct $ref (e.g. Enums)
+		if let Some(Value::String(ref_def)) = prop_value.get("$ref").map(|v| v.clone())
+		{
+			let ref_def = ref_def.trim_start_matches('#');
+			if let Some(Value::Object(refed_obj)) = json_schema.pointer(ref_def) {
+				if let Some(prop_obj) = prop_value.as_object_mut() {
+					for (sub_name, sub_val) in refed_obj {
+						// Don't overwrite existing keys (like description)
+						if !prop_obj.contains_key(sub_name) {
+							prop_obj.insert(sub_name.to_string(), sub_val.clone());
+						}
+					}
+					// remove the $ref
+					prop_obj.remove("$ref");
+				}
+			}
+		}
+
 		// TODO: needs to handle `anyOf` when (`Option<T>` is used)
 		if let Some(Value::String(ref_def)) = prop_value.pointer_mut("/allOf/0/$ref")
 		{

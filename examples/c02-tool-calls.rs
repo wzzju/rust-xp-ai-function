@@ -1,5 +1,6 @@
-use async_openai::types::{
-	ChatCompletionToolChoiceOption, CreateChatCompletionRequest,
+use async_openai::types::chat::{
+	ChatCompletionMessageToolCalls, ChatCompletionToolChoiceOption,
+	CreateChatCompletionRequest, ToolChoiceOptions,
 };
 use serde_json::json;
 use xp_ai_function::oa_client::new_oa_client;
@@ -48,21 +49,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 		model,
 		messages,
 		tools,
-		tool_choice: Some(ChatCompletionToolChoiceOption::Auto),
+		tool_choice: Some(ChatCompletionToolChoiceOption::Mode(
+			ToolChoiceOptions::Auto,
+		)),
 		..Default::default()
 	};
 	let chat_response = chat_client.create(msg_req).await?;
+	println!(
+		"\nChat Response:\n{}",
+		serde_json::to_string_pretty(&chat_response)?
+	);
 	let first_choice = chat::first_choice(chat_response)?;
 
 	// -- Extract and print tye tool calls
 	if let Some(tool_calls) = first_choice.message.tool_calls {
 		for tool in tool_calls {
-			println!(
-				r#"
+			if let ChatCompletionMessageToolCalls::Function(tool) = tool {
+				println!(
+					r#"
 ===   function: '{}'
      arguments: {}"#,
-				tool.function.name, tool.function.arguments
-			);
+					tool.function.name, tool.function.arguments
+				);
+			}
 		}
 	}
 

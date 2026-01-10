@@ -6,7 +6,7 @@ use xp_ai_function::tools::AiTools;
 use xp_ai_function::{chat, conv};
 
 #[allow(unused)] // Will be passthrough API
-#[derive(Debug, Deserialize, RpcParams)]
+#[derive(Debug, Deserialize, Serialize, RpcParams)]
 struct GetWeatherParams {
 	location: String,
 	country: String,

@@ -1,4 +1,6 @@
+use rpc_router::resources_builder;
 use xp_ai_function::conv;
+use xp_ai_function::model::ModelManager;
 use xp_ai_function::oa_client::new_oa_client;
 use xp_ai_function::tools::new_ai_tools;
 
@@ -8,7 +10,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	let oa_client = new_oa_client()?;
 
 	// -- Get the AI Tools
-	let ai_tools = new_ai_tools(None)?;
+	let mm = ModelManager::default();
+	let ai_tools = new_ai_tools(Some(resources_builder![mm]))?;
 
 	// -- User questions
 	let questions = &[

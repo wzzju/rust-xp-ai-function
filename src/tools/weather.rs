@@ -1,14 +1,14 @@
 use crate::chat;
 use crate::model::ModelManager;
-use async_openai::types::ChatCompletionTool;
-use rpc_router::{router_builder, RouterBuilder, RpcParams};
+use async_openai::types::chat::ChatCompletionTools;
+use rpc_router::{RouterBuilder, RpcParams, router_builder};
 use serde::{Deserialize, Serialize};
 
 pub(super) fn router_builder() -> RouterBuilder {
 	router_builder![get_weather]
 }
 
-pub(super) fn chat_tools() -> crate::Result<Vec<ChatCompletionTool>> {
+pub(super) fn chat_tools() -> crate::Result<Vec<ChatCompletionTools>> {
 	let tool_weather = chat::tool_fn_from_type::<GetWeatherParams>()?;
 
 	Ok(vec![tool_weather])
@@ -23,13 +23,14 @@ struct GetWeatherParams {
 	location: String,
 	/// The full country name of the city
 	country: String,
-	/// Unit respecting the country of the city
+	/// The temperature unit (e.g., 'celsius' or 'fahrenheit')
 	unit: TempUnit,
 }
 
 #[derive(Debug, Serialize, Deserialize, schemars::JsonSchema, RpcParams)]
+#[serde(rename_all = "lowercase")]
 enum TempUnit {
-	Celcius,
+	Celsius,
 	Fahrenheit,
 }
 

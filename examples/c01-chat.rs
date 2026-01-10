@@ -1,4 +1,4 @@
-use async_openai::types::CreateChatCompletionRequest;
+use async_openai::types::chat::CreateChatCompletionRequest;
 use xp_ai_function::oa_client::new_oa_client;
 use xp_ai_function::{chat, gpts};
 

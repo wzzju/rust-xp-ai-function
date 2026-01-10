@@ -1,8 +1,9 @@
 use crate::oa_client::OaClient;
 use crate::tools::AiTools;
 use crate::{chat, gpts, Result};
-use async_openai::types::{
-	ChatCompletionToolChoiceOption, CreateChatCompletionRequest,
+use async_openai::types::chat::{
+	ChatCompletionMessageToolCalls, ChatCompletionToolChoiceOption,
+	CreateChatCompletionRequest, ToolChoiceOptions,
 };
 use serde_json::Value;
 
@@ -26,7 +27,9 @@ pub async fn send_user_msg(
 		model: model.to_string(),
 		messages: messages.clone(),
 		tools: tools.clone(),
-		tool_choice: Some(ChatCompletionToolChoiceOption::Auto),
+		tool_choice: Some(ChatCompletionToolChoiceOption::Mode(
+			ToolChoiceOptions::Auto,
+		)),
 		..Default::default()
 	};
 	let chat_response = chat_client.create(msg_req).await?;
@@ -48,19 +51,22 @@ pub async fn send_user_msg(
 	// For each tool_call, rpc_router call
 	let tool_calls = first_choice.message.tool_calls;
 	for tool_call in tool_calls.iter().flatten() {
-		let tool_call_id = tool_call.id.clone();
-		let fn_name = tool_call.function.name.clone();
-		let params: Value = serde_json::from_str(&tool_call.function.arguments)?;
+		if let ChatCompletionMessageToolCalls::Function(tool_call) = tool_call {
+			let tool_call_id = tool_call.id.clone();
+			let fn_name = tool_call.function.name.clone();
+			let params: Value = serde_json::from_str(&tool_call.function.arguments)?;
 
-		// Execute with rpc_router
-		let call_result = rpc_router.call_route(None, fn_name, Some(params)).await?;
-		let response = call_result.value;
+			// Execute with rpc_router
+			let call_result =
+				rpc_router.call_route(None, fn_name, Some(params)).await?;
+			let response = call_result.value;
 
-		// Add it to the tool_responses
-		tool_responses.push(ToolResponse {
-			tool_call_id,
-			response,
-		});
+			// Add it to the tool_responses
+			tool_responses.push(ToolResponse {
+				tool_call_id,
+				response,
+			});
+		}
 	}
 
 	// -- Make messages mutable for follow-up
@@ -85,7 +91,9 @@ pub async fn send_user_msg(
 		model: model.to_string(),
 		messages,
 		tools,
-		tool_choice: Some(ChatCompletionToolChoiceOption::Auto),
+		tool_choice: Some(ChatCompletionToolChoiceOption::Mode(
+			ToolChoiceOptions::Auto,
+		)),
 		..Default::default()
 	};
 	let chat_response = chat_client.create(msg_req).await?;

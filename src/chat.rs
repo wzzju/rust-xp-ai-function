@@ -1,9 +1,9 @@
 use crate::{tools, Result};
-use async_openai::types::{
-	ChatChoice, ChatCompletionMessageToolCall,
+use async_openai::types::chat::{
+	ChatChoice, ChatCompletionMessageToolCalls,
 	ChatCompletionRequestAssistantMessageArgs, ChatCompletionRequestMessage,
 	ChatCompletionRequestToolMessageArgs, ChatCompletionRequestUserMessageArgs,
-	ChatCompletionTool, ChatCompletionToolArgs, CreateChatCompletionResponse,
+	ChatCompletionTool, ChatCompletionTools, CreateChatCompletionResponse,
 	FunctionObject,
 };
 use schemars::JsonSchema;
@@ -29,7 +29,7 @@ pub fn tool_response_msg(
 }
 
 pub fn tool_calls_msg(
-	tool_calls: Vec<ChatCompletionMessageToolCall>,
+	tool_calls: Vec<ChatCompletionMessageToolCalls>,
 ) -> Result<ChatCompletionRequestMessage> {
 	let msg = ChatCompletionRequestAssistantMessageArgs::default()
 		.tool_calls(tool_calls)
@@ -38,7 +38,7 @@ pub fn tool_calls_msg(
 	Ok(msg.into())
 }
 
-pub fn tool_fn_from_type<T: JsonSchema>() -> Result<ChatCompletionTool> {
+pub fn tool_fn_from_type<T: JsonSchema>() -> Result<ChatCompletionTools> {
 	let spec = tools::tool_spec::<T>()?;
 	tool_fn(spec.fn_name, spec.fn_description, spec.params)
 }
@@ -47,15 +47,16 @@ pub fn tool_fn(
 	name: impl Into<String>,
 	description: impl Into<String>,
 	parameters: Value,
-) -> Result<ChatCompletionTool> {
-	let tool = ChatCompletionToolArgs::default()
-		.function(FunctionObject {
+) -> Result<ChatCompletionTools> {
+	let tool = ChatCompletionTool {
+		function: FunctionObject {
 			name: name.into(),
 			description: Some(description.into()),
 			parameters: Some(parameters),
-		})
-		.build()?;
-	Ok(tool)
+			strict: None,
+		},
+	};
+	Ok(ChatCompletionTools::Function(tool))
 }
 
 pub fn first_choice(

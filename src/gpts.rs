@@ -1,6 +1,6 @@
 // link: https://platform.openai.com/docs/models/overview
 
-pub const MODEL: &str = MODEL_3_TURBO;
+pub const MODEL: &str = MODEL_4_TURBO;
 
 // -- GPT 4 Turbo
 
@@ -9,7 +9,7 @@ pub const MODEL_4_O: &str = "gpt-4o";
 
 // Should be legacy model at this point
 // Typically point to the latest (as of 2024-03-13 - "gpt-4-0125-preview")
-pub const MODEL_4_TURBO: &str = "gpt-4-turbo-preview";
+pub const MODEL_4_TURBO: &str = "gpt-4-turbo";
 
 // -- GPT 3.5 Turbo
 
