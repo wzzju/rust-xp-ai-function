@@ -7,7 +7,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// -- Init AI Client
 	let oa_client = new_oa_client()?;
 	let chat_client = oa_client.chat();
-	let model = gpts::MODEL.to_string();
+	let model = gpts::model().to_string();
 
 	// -- User question
 	let question = "Why is the sky red? (be concise)";

@@ -2,9 +2,9 @@ use async_openai::types::chat::{
 	ChatCompletionMessageToolCalls, ChatCompletionToolChoiceOption,
 	CreateChatCompletionRequest, ToolChoiceOptions,
 };
-use rpc_router::{router_builder, RpcParams};
+use rpc_router::{RpcParams, router_builder};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use xp_ai_function::oa_client::new_oa_client;
 use xp_ai_function::{chat, gpts};
 
@@ -36,7 +36,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	// -- Init AI Client
 	let oa_client = new_oa_client()?;
 	let chat_client = oa_client.chat();
-	let model = gpts::MODEL;
+	let model = gpts::model();
 
 	// -- User question
 	let question = "What is the weather in the California's best city and Paris?";

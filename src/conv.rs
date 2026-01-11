@@ -1,6 +1,6 @@
 use crate::oa_client::OaClient;
 use crate::tools::AiTools;
-use crate::{chat, gpts, Result};
+use crate::{Result, chat, gpts};
 use async_openai::types::chat::{
 	ChatCompletionMessageToolCalls, ChatCompletionToolChoiceOption,
 	CreateChatCompletionRequest, ToolChoiceOptions,
@@ -13,7 +13,7 @@ pub async fn send_user_msg(
 	question: &str,
 ) -> Result<String> {
 	let chat_client = oa_client.chat();
-	let model = gpts::MODEL;
+	let model = gpts::model();
 
 	// -- Build messages
 	let messages = vec![chat::user_msg(question)?];

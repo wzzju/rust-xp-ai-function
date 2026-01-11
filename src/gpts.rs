@@ -1,6 +1,13 @@
+use std::sync::OnceLock;
+
 // link: https://platform.openai.com/docs/models/overview
 
-pub const MODEL: &str = MODEL_4_TURBO;
+pub fn model() -> &'static str {
+	static MODEL: OnceLock<String> = OnceLock::new();
+	MODEL.get_or_init(|| {
+		std::env::var("MODEL").unwrap_or_else(|_| MODEL_3_TURBO.to_string())
+	})
+}
 
 // -- GPT 4 Turbo
 
