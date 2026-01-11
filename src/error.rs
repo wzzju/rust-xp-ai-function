@@ -14,11 +14,17 @@ pub enum Error {
 	#[from]
 	Json(serde_json::Error),
 
-	#[from]
-	RpcCall(rpc_router::CallError),
+	// reduce the size of RpcCall by boxing it
+	RpcCall(Box<rpc_router::CallError>),
 }
 
 // region:    --- Froms
+
+impl From<rpc_router::CallError> for Error {
+	fn from(val: rpc_router::CallError) -> Self {
+		Self::RpcCall(Box::new(val))
+	}
+}
 
 impl From<&str> for Error {
 	fn from(val: &str) -> Self {

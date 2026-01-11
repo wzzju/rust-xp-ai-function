@@ -1,7 +1,7 @@
-use crate::utils::XValue;
 use crate::Result;
-use schemars::{schema_for, JsonSchema};
-use serde_json::{json, Value};
+use crate::utils::XValue;
+use schemars::{JsonSchema, schema_for};
+use serde_json::{Value, json};
 
 #[derive(Debug)]
 pub struct ToolSpec {
@@ -42,8 +42,7 @@ fn into_spec_params(mut json_schema: Value) -> Result<Value> {
 	// loop through all property entries
 	for (_name, prop_value) in properties_obj {
 		// -- Handle direct $ref (e.g. Enums)
-		if let Some(Value::String(ref_def)) = prop_value.get("$ref").map(|v| v.clone())
-		{
+		if let Some(Value::String(ref_def)) = prop_value.get("$ref").cloned() {
 			let ref_def = ref_def.trim_start_matches('#');
 			if let Some(Value::Object(refed_obj)) = json_schema.pointer(ref_def) {
 				if let Some(prop_obj) = prop_value.as_object_mut() {
