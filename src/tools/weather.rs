@@ -4,6 +4,8 @@ use async_openai::types::chat::ChatCompletionTools;
 use rpc_router::{RouterBuilder, RpcParams, router_builder};
 use serde::{Deserialize, Serialize};
 
+// region:    --- Builders
+
 pub(super) fn router_builder() -> RouterBuilder {
 	router_builder![get_weather]
 }
@@ -13,6 +15,10 @@ pub(super) fn chat_tools() -> crate::Result<Vec<ChatCompletionTools>> {
 
 	Ok(vec![tool_weather])
 }
+
+// endregion: --- Builders
+
+// region:    --- Weather Params
 
 /// # get_weather
 /// get the weather for a city
@@ -41,6 +47,10 @@ struct Weather {
 	humidity_rh: f32,
 }
 
+// endregion: --- Weather Params
+
+// region:    --- Weather Function
+
 async fn get_weather(
 	_mm: ModelManager,
 	params: GetWeatherParams,
@@ -51,3 +61,5 @@ async fn get_weather(
 		humidity_rh: 0.3,
 	})
 }
+
+// endregion: --- Weather Function

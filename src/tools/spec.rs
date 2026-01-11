@@ -1,5 +1,5 @@
 use crate::Result;
-use crate::utils::XValue;
+use crate::support::XValue;
 use schemars::{JsonSchema, schema_for};
 use serde_json::{Value, json};
 
@@ -85,8 +85,7 @@ fn into_spec_params(mut json_schema: Value) -> Result<Value> {
 
 #[cfg(test)]
 mod tests {
-	type Error = Box<dyn std::error::Error>;
-	type Result<T> = core::result::Result<T, Error>; // For tests.
+	type Result<T> = core::result::Result<T, Box<dyn std::error::Error>>; // For tests.
 
 	use super::*;
 	use serde::{Deserialize, Serialize};
@@ -106,13 +105,13 @@ mod tests {
 
 	#[derive(Debug, Serialize, Deserialize, schemars::JsonSchema)]
 	enum TempUnit {
-		Celcius,
+		Celsius,
 		Fahrenheit,
 	}
 
 	#[test]
 	fn test_tool_spec() -> Result<()> {
-		// jut to test signature (for now)
+		// just to test signature (for now)
 		let _ = tool_spec::<GetWeatherParams>();
 		Ok(())
 	}

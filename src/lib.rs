@@ -9,7 +9,7 @@ pub mod conv;
 pub mod gpts;
 pub mod model;
 pub mod oa_client;
+mod support;
 pub mod tools;
-pub mod utils;
 
 // endregion: --- Modules

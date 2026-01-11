@@ -1,12 +1,21 @@
-use std::sync::OnceLock;
+use std::sync::LazyLock;
+// use std::sync::OnceLock;
 
-// link: https://platform.openai.com/docs/models/overview
+// pub fn model() -> &'static str {
+// 	static MODEL: OnceLock<String> = OnceLock::new();
+// 	MODEL.get_or_init(|| {
+// 		std::env::var("MODEL").unwrap_or_else(|_| MODEL_3_TURBO.to_string())
+// 	})
+// }
 
 pub fn model() -> &'static str {
-	static MODEL: OnceLock<String> = OnceLock::new();
-	MODEL.get_or_init(|| {
+	// drectly bind initialization logic during definition
+	static MODEL: LazyLock<String> = LazyLock::new(|| {
 		std::env::var("MODEL").unwrap_or_else(|_| MODEL_3_TURBO.to_string())
-	})
+	});
+
+	// LazyLock implements Deref trait, supporting automatic dereferencing
+	&MODEL
 }
 
 // -- GPT 4 Turbo

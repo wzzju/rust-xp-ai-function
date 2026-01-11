@@ -10,6 +10,8 @@ use schemars::JsonSchema;
 use serde_json::Value;
 use std::fmt::Display;
 
+// region:    --- Messages
+
 pub fn user_msg(content: impl Into<String>) -> Result<ChatCompletionRequestMessage> {
 	let msg = ChatCompletionRequestUserMessageArgs::default()
 		.content(content.into())
@@ -38,6 +40,10 @@ pub fn tool_calls_msg(
 	Ok(msg.into())
 }
 
+// endregion: --- Messages
+
+// region:    --- Tools
+
 pub fn tool_fn_from_type<T: JsonSchema>() -> Result<ChatCompletionTools> {
 	let spec = tools::tool_spec::<T>()?;
 	tool_fn(spec.fn_name, spec.fn_description, spec.params)
@@ -59,6 +65,10 @@ pub fn tool_fn(
 	Ok(ChatCompletionTools::Function(tool))
 }
 
+// endregion: --- Tools
+
+// region:    --- Utils
+
 pub fn first_choice(
 	chat_response: CreateChatCompletionResponse,
 ) -> Result<ChatChoice> {
@@ -69,3 +79,6 @@ pub fn first_choice(
 		.ok_or("No first choice?")?;
 	Ok(first_choice)
 }
+
+// endregion: --- Utils
+
