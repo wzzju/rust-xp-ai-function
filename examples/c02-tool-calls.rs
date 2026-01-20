@@ -56,7 +56,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 	};
 	let chat_response = chat_client.create(msg_req).await?;
 	println!(
-		"\nChat Response:\n{}",
+		r#"
+===   Chat Response:
+{}"#,
 		serde_json::to_string_pretty(&chat_response)?
 	);
 	let first_choice = chat::first_choice(chat_response)?;

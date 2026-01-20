@@ -76,8 +76,9 @@ mod tests {
 	#[test]
 	fn test_error_from_json() -> Result<()> {
 		// -- Setup & Fixtures
-		let json_err =
-			serde_json::from_str::<serde_json::Value>("invalid json").unwrap_err();
+		let json_err = serde_json::from_str::<serde_json::Value>("invalid json")
+			.err()
+			.ok_or("Should be invalid json error")?;
 
 		// -- Exec
 		let err: Error = json_err.into();
@@ -109,7 +110,7 @@ mod tests {
 	#[test]
 	fn test_error_custom_from_err_simple() -> Result<()> {
 		// -- Setup & Fixtures
-		let io_err = std::io::Error::new(std::io::ErrorKind::Other, "Some io error");
+		let io_err = std::io::Error::other("Some io error");
 
 		// -- Exec
 		let err = Error::custom_from_err(io_err);

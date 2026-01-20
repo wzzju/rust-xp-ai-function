@@ -27,8 +27,10 @@ pub(super) fn chat_tools() -> crate::Result<Vec<ChatCompletionTools>> {
 struct GetWeatherParams {
 	/// The city and state, e.g. San Francisco, CA
 	location: String,
+
 	/// The full country name of the city
 	country: String,
+
 	/// The temperature unit (e.g., 'celsius' or 'fahrenheit')
 	unit: TempUnit,
 }
