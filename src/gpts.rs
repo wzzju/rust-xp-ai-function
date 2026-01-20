@@ -9,7 +9,7 @@ use std::sync::LazyLock;
 // }
 
 pub fn model() -> &'static str {
-	// drectly bind initialization logic during definition
+	// directly bind initialization logic during definition
 	static MODEL: LazyLock<String> = LazyLock::new(|| {
 		std::env::var("MODEL").unwrap_or_else(|_| MODEL_3_TURBO.to_string())
 	});
